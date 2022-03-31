@@ -24,7 +24,7 @@ export class Phase extends BaseEntity{
     author: string;
 
     @Field()
-    @Column()
+    @Column({default:false})
     isCompleted: boolean;
 
   
@@ -32,7 +32,7 @@ export class Phase extends BaseEntity{
     @JoinColumn({name: "userId"})
     user: User;
 
-    
+    @Field(()=> [Task])
     @OneToMany(()=> Phase, phase => phase.tasks, {onDelete: "CASCADE", onUpdate: "CASCADE"})
     tasks: Array<Task>;
 

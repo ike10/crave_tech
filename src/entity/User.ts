@@ -14,6 +14,7 @@ export class User extends BaseEntity{
     @Column()
     username: string;
 
+    @Field(()=> [Phase])
     @OneToMany(()=> User, user => user.phases, {onDelete: "CASCADE", onUpdate: "CASCADE"})
     phases: Array<Phase>;
 

@@ -23,11 +23,11 @@ export class Task extends BaseEntity{
     author: string;
 
     @Field()
-    @Column()
+    @Column({ default:false })
     isCompleted: boolean;
 
    
-
+    @Field(()=>Phase)
     @ManyToOne(()=> Phase, phase => phase.tasks)
     @JoinColumn({name: "phaseId"})
     phase: Phase;

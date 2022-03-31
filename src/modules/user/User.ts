@@ -1,8 +1,10 @@
 
 
+import { Phase } from "../../entity/Phase";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 // import { CreatePhaseInput } from './create/CreateInput';
 import { User } from '../../entity/User';
+import { CreatePhaseInput } from "../phase/InputValidation/PhaseInput";
 import { RegisterUserInput, UpdateUserInput } from './InputValidation/UserInput';
 
 
@@ -58,6 +60,24 @@ export class UserResolver {
         const user = await User.findOne({where:{id}})
         if (!user) throw new Error("User not found")
         await User.remove(user)
+    }
+
+    // create new phase and add to user
+    @Mutation(()=>User)
+    async addPhaseToUser(@Arg("id") id: number, @Arg("data") {
+        title,
+        description,
+        author
+    }: CreatePhaseInput){
+        const user = await User.findOne({where:{id}})
+        if (!user) throw new Error("User not found")
+        const phase = await Phase.create({
+            title,
+            description,
+            author,
+        }).save()
+        user.phases.push(phase)
+        await user.save()
     }
 
     

@@ -2,10 +2,13 @@ import { Phase } from '../../entity/Phase';
 
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { CreatePhaseInput } from './InputValidation/PhaseInput'
+import { Task } from '../../entity/Task';
+
 
 @Resolver(Phase)
 export class PhaseResolver {
 
+    
     // get all phases
     @Query(() => [Phase])
     async getAllPhases() {
@@ -14,7 +17,7 @@ export class PhaseResolver {
 
     // get single phase
     @Query(() => Phase)
-    async getPhase(@Arg("id") id: number) {
+    async getSinglePhase(@Arg("id") id: number) {
 
         const phase = await Phase.findOne({where:{id}});
         
@@ -86,5 +89,33 @@ export class PhaseResolver {
 
         return phase
     }
+
+    // create new task and add to phase
+    @Mutation(()=>Phase)
+    async addTaskToPhase(@Arg("id") id: number, @Arg("data") {
+        title,
+        description,
+        author
+    }: CreatePhaseInput){
+        const phase = await Phase.findOne({where:{id}})
+        if (!phase) throw new Error("Phase not found")
+        const task = await Task.create({
+            title,
+            description,
+            author,
+            isCompleted: false,
+        }).save()
+
+        phase.tasks.push(task)
+
+        await phase.save()
+        
+
+        return task
+    }
+
+    
+    
+
 
 }
