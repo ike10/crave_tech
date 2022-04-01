@@ -28,8 +28,10 @@ yarn start
 
 Open [http://localhost:4000/graphql] with your browser to interact with the graphiql playground.
 
+## Sample Query and Data Body
+![](./assets/querySample.PNG)
 
-## Limitation/Tosdos(Areas for modification/improvement)
+## Limitation/Todos(Areas for modification/improvement)
 * Build Test Pipeline
 * Implement frontend to consume GraphQL Api
 * Build better error handler
