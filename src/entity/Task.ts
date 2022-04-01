@@ -26,10 +26,14 @@ export class Task extends BaseEntity{
     @Column({ default:false })
     isCompleted: boolean;
 
+    @Column({name : 'phaseId', nullable: true})
+    phaseId: number;
+
    
     @Field(()=>Phase)
-    @ManyToOne(()=> Phase, phase => phase.tasks)
-    @JoinColumn({name: "phaseId"})
+    @ManyToOne(()=> Phase, phase => phase.tasks, {cascade: true, eager:true, lazy:true})
+    @JoinColumn({name: "phaseId", referencedColumnName: "id"})
     phase: Phase;
+
 
 }

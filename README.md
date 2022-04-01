@@ -1,20 +1,35 @@
 # crave_tech_backend_audition
 
-Start the server
-Run in development mode
+This is a simple graphql api that helps Startups monitor tasks and sub tasks.
+Tools and Frameworks used:
+* NodeJS
+* Express
+* TypeGraphql
+* TypeOrm
+* Twitter  API
 
-npm run dev
-Run in production mode
+## Getting Started
 
-npm run prod
-Testing over HTTP (tag v1.0.0)
-The default URL is: http://localhost:3000
+First, clone this repo:
+```bash
+git clone <repo>
+```
+Then, install all required dependencies:
+```bash
+npm install
+```
 
-GET all contacts
-Send GET request to http://localhost:3000/contact/
-Testing over HTTPs (tag v2.0.0)
-The default URL is: https://localhost:3000
+lastly, run the development server by:
+```bash
+npm start
+# or
+yarn start
+```
 
-The key and cert in the config folder is for testing purpose only. You should generate your own.
+Open [http://localhost:4000/graphql] with your browser to interact with the graphiql playground.
 
-Reference from Lynda.com
+
+## Limitation/Tosdos(Areas for modification/improvement)
+* Build Test Pipeline
+* Implement frontend to consume GraphQL Api
+* Build better error handler

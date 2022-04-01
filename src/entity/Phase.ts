@@ -27,15 +27,22 @@ export class Phase extends BaseEntity{
     @Column({default:false})
     isCompleted: boolean;
 
+
+    @Column({name : 'userId', nullable: true})
+    userId: number;
   
-    @ManyToOne(()=> User, user => user.phases)
-    @JoinColumn({name: "userId"})
+    @ManyToOne(()=> User, user => user.phases, {eager:true, lazy:true})
+    @JoinColumn({name: "userId", referencedColumnName: "id"})
     user: User;
 
-    @Field(()=> [Task])
-    @OneToMany(()=> Phase, phase => phase.tasks, {onDelete: "CASCADE", onUpdate: "CASCADE"})
-    tasks: Array<Task>;
+    @Column({name : 'taskId', nullable: true, array:true})
+    taskId: number;
 
-    
+    @Field(()=> [Task])
+    @JoinColumn({name : 'taskId'})
+    @OneToMany(()=> Task, task => task.phase)
+    tasks: Task[];
+
+       
 
 }

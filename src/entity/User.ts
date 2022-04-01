@@ -1,5 +1,5 @@
 import { Field, ID, ObjectType } from "type-graphql";
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, JoinColumn } from "typeorm";
 import { Phase } from "./Phase";
 import "reflect-metadata" // this shim is required
 
@@ -14,9 +14,14 @@ export class User extends BaseEntity{
     @Column()
     username: string;
 
+   
+    @Column({name : 'phaseId', nullable: true, array:true})
+    phaseId: number;
+
     @Field(()=> [Phase])
-    @OneToMany(()=> User, user => user.phases, {onDelete: "CASCADE", onUpdate: "CASCADE"})
-    phases: Array<Phase>;
+    @JoinColumn({name : 'phaseId'})
+    @OneToMany(()=> Phase, phase => phase.user, {cascade: true})
+    phases: Phase[];
 
 
 }

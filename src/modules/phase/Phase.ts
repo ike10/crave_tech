@@ -2,7 +2,8 @@ import { Phase } from '../../entity/Phase';
 
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { CreatePhaseInput } from './InputValidation/PhaseInput'
-import { Task } from '../../entity/Task';
+import { User } from '../../entity/User';
+import { createQueryBuilder, getRepository } from 'typeorm';
 
 
 @Resolver(Phase)
@@ -12,22 +13,66 @@ export class PhaseResolver {
     // get all phases
     @Query(() => [Phase])
     async getAllPhases() {
-        return await Phase.find();
+        try{
+            const phase = await createQueryBuilder()
+                                .select('phase')
+                                .from(Phase, 'phase')
+                                // .where('phase.id = :id', {id})
+                                .leftJoinAndSelect('phase.tasks', 'tasks')
+                                .getMany()
+        return phase
+        }catch(error){
+            throw new Error(error)
+        }
+         
     }
 
     // get single phase
     @Query(() => Phase)
     async getSinglePhase(@Arg("id") id: number) {
 
-        const phase = await Phase.findOne({where:{id}});
+        try{
+            
+            const phase = await createQueryBuilder()
+                                .select('phase')
+                                .from(Phase, 'phase')
+                                .where('phase.id = :id', {id})
+                                .leftJoinAndSelect('phase.tasks', 'tasks')
+                                .getOne()
+        return phase
+        }catch(error){
+            throw new Error(error)
+        }
+
         
-        if (!phase) throw new Error("Phase not found");
-        return phase;
+    }               
+
+    // Get uncompleted phases
+    @Query(()=>[Phase])
+    async getUncompletedPhases(){
+        const phases = await Phase.find()
+
+        return phases.filter(phase => {
+            return phase.isCompleted === false
+        })
+
     }
 
-    // create phase
+    // Get completed phases
+    @Query(()=>[Phase])
+    async getCompletedPhases(){
+        const phases = await Phase.find()
+
+        return phases.filter(phase => {
+            return phase.isCompleted === true
+        })
+
+    }
+
+    // Create phase
     @Mutation(()=>Phase)
     async createPhase(
+       @Arg("userId") id: number,
         @Arg("data") {
             title,
             description,
@@ -36,15 +81,30 @@ export class PhaseResolver {
 
         
       
-    ):Promise<Phase>{
-        const phase = await Phase.create({
+    ){
+        
+
+        try{
+            const phase = await Phase.create({
             title,
             description,
             author,
-            isCompleted: false,
+            isCompleted: false
+          
         }).save()
-
+        const user = await getRepository(User).findOne({where:{id}, relations:['phases']})
+        if(!user){
+            throw new Error ('User not found')
+        }
+        user.phases.push(phase)
+        await user.save()
         return phase
+          
+        }catch(error){
+            throw new Error(error)
+        }
+
+        
     }
 
     // update phase
@@ -75,47 +135,5 @@ export class PhaseResolver {
 
         return phase
     }
-
-    // complete phase
-    @Mutation(()=>Phase)
-    async completePhase(@Arg("id") id:number){
-        const phase = await Phase.findOne({where:{id}})
-
-        if (!phase) throw new Error('Phase not found')
-
-        phase.isCompleted === true
-
-        await phase.save()
-
-        return phase
-    }
-
-    // create new task and add to phase
-    @Mutation(()=>Phase)
-    async addTaskToPhase(@Arg("id") id: number, @Arg("data") {
-        title,
-        description,
-        author
-    }: CreatePhaseInput){
-        const phase = await Phase.findOne({where:{id}})
-        if (!phase) throw new Error("Phase not found")
-        const task = await Task.create({
-            title,
-            description,
-            author,
-            isCompleted: false,
-        }).save()
-
-        phase.tasks.push(task)
-
-        await phase.save()
-        
-
-        return task
-    }
-
-    
-    
-
 
 }
