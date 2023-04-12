@@ -1,4 +1,4 @@
-# crave_tech_backend_audition
+# crave_tech
 
 This is a simple graphql api that helps Startups monitor tasks and sub tasks.
 Tools and Frameworks used:
